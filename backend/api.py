@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from ai_service import AIQueryService
@@ -16,6 +17,13 @@ class AIQueryAPI:
     def __init__(self, service: AIQueryService | None = None):
         self._service = service
         self.app = FastAPI(title="AI Query API", version="1.0.0")
+        self.app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
+        )
         self._register_routes()
 
     def get_service(self) -> AIQueryService:
