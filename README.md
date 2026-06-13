@@ -53,3 +53,8 @@
   - LLM - Both
   - Testing - Both
   - Frontend - Lucas
+  
+  
+## Databases for Testing
+The test-database is this example employee database: https://github.com/datacharmer/test_db/tree/master \
+See [SETUP.md](test-mysqldb/SETUP.md)
