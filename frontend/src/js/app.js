@@ -7,12 +7,27 @@ window.onload = function () {
 
     const form = document.getElementById("prompForm");
     const input = document.getElementById("queryInput");
+    const submitQueryButton = document.getElementById("submitQuery");
     const responseText = document.getElementById("responseText");
     const usedQueryText = document.getElementById("usedSqlQuery");
     const usedSqlQueryContainer = document.getElementById("usedSqlQueryContainer");
     const rawResultsContainer = document.getElementById("rawResultsContainer");
     const tableHeader = document.getElementById("tableHeader");
     const tableBody = document.getElementById("tableBody");
+    const submitButton = document.getElementById("submitQuery");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+
+    function showLoading() {
+        loadingSpinner.style.display = "block";
+        submitButton.disabled = true;
+        input.disabled = true;
+    }
+
+    function hideLoading() {
+        loadingSpinner.style.display = "none";
+        submitButton.disabled = false;
+        input.disabled = false;
+    }
 
     function formatSqlQuery(sql) {
         // Format SQL query with line breaks for readability
@@ -74,7 +89,11 @@ window.onload = function () {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const prompt = input.value;
+        if (!prompt.trim()) return;
+
         try {
+            showLoading();
+
             const response = await dataManager.promptRequest(prompt);
             const answer = response.answer;
             const sqlContent = response.sql_query;
@@ -82,16 +101,17 @@ window.onload = function () {
             responseText.textContent = response.answer;
             responseText.classList.remove("text-danger");
             responseText.style.whiteSpace = "pre-wrap";
+            responseText.style.wordWrap = "break-word";
 
-            if(sqlContent) {
+            if (sqlContent) {
                 usedSqlQueryContainer.style.display = "block";
                 usedQueryText.innerHTML = formatSqlQuery(sqlContent).replace(/\n/g, "<br>");
-            }else{
+            } else {
                 usedSqlQueryContainer.style.display = "none";
             }
 
             // Populate raw results table
-            if(response.raw_result && Array.isArray(response.raw_result)) {
+            if (response.raw_result && Array.isArray(response.raw_result)) {
                 const columns = extractColumnsFromSQL(sqlContent);
                 populateTable(response.raw_result, columns);
             } else {
@@ -103,6 +123,16 @@ window.onload = function () {
             responseText.classList.add("text-danger");
             usedQueryText.textContent = "";
             rawResultsContainer.style.display = "none";
+        } finally {
+            hideLoading();
+        }
+    });
+
+    // Shift+Enter to submit form
+    input.addEventListener("keydown", (event) => {
+        if (event.shiftKey && event.key === "Enter") {
+            event.preventDefault();
+            submitButton.click();
         }
     });
 };

@@ -14,8 +14,15 @@
         <h1>Simple RAG User Interface</h1>
         <p>This is a simple user interface to prompt the underlying database using natural language queries.</p>
         <form id="prompForm">
-            <textarea id="queryInput" class="form-control" rows="3" placeholder="Enter your query here..."></textarea>
-            <button id="submitQuery" class="btn btn-primary mt-3">Submit Query</button>
+            <textarea id="queryInput" class="form-control" rows="3" placeholder="Enter your query here... (Shift+Enter to submit)"></textarea>
+            <div class="d-flex align-items-center gap-2">
+                <button id="submitQuery" class="btn btn-primary mt-3">Submit Query</button>
+                <div id="loadingSpinner" class="mt-3" style="display: none;">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
         </form>
 
         <div id="responseContainer" class="mt-4">
