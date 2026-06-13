@@ -1,9 +1,8 @@
 'use strict';
 
-import DataManager from "./datamanager.js";
+import {dataManagerInstance} from "./datamanager.js";
 
 window.onload = function () {
-    const dataManager = new DataManager();
 
     const form = document.getElementById("prompForm");
     const input = document.getElementById("queryInput");
@@ -16,15 +15,18 @@ window.onload = function () {
     const tableBody = document.getElementById("tableBody");
     const submitButton = document.getElementById("submitQuery");
     const loadingSpinner = document.getElementById("loadingSpinner");
+    const cancelQueryButton = document.getElementById("cancelQuery");
 
     function showLoading() {
         loadingSpinner.style.display = "block";
+        cancelQueryButton.style.display = "block";
         submitButton.disabled = true;
         input.disabled = true;
     }
 
     function hideLoading() {
         loadingSpinner.style.display = "none";
+        cancelQueryButton.style.display = "none";
         submitButton.disabled = false;
         input.disabled = false;
     }
@@ -91,17 +93,20 @@ window.onload = function () {
         const prompt = input.value;
         if (!prompt.trim()) return;
 
+        if(!dataManagerInstance.isReady()) {
+            return;
+        }
+
         try {
             showLoading();
 
-            const response = await dataManager.promptRequest(prompt);
+            const response = await dataManagerInstance.promptRequest(prompt);
             const answer = response.answer;
             const sqlContent = response.sql_query;
 
-            responseText.textContent = response.answer;
+            responseText.textContent = answer;
             responseText.classList.remove("text-danger");
             responseText.style.whiteSpace = "pre-wrap";
-            responseText.style.wordWrap = "break-word";
 
             if (sqlContent) {
                 usedSqlQueryContainer.style.display = "block";
@@ -134,5 +139,11 @@ window.onload = function () {
             event.preventDefault();
             submitButton.click();
         }
+    });
+
+    cancelQueryButton.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        dataManagerInstance.cancelRequest();
     });
 };

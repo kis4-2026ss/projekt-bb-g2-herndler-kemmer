@@ -1,31 +1,53 @@
 'use strict';
+
 const apiBaseUrl = "http://localhost:8000/api";
 
 class DataManager {
-   
+    constructor() {
+        this.abortController = null;
+    }
 
     async promptRequest(prompt) {
-        const response = await fetch(`${apiBaseUrl}/prompt`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                question: prompt
-            })
-        });
+        this.abortController = new AbortController();
 
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
+        try {
+            const response = await fetch(`${apiBaseUrl}/prompt`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    question: prompt
+                }),
+                signal: this.abortController.signal
+            });
 
-        const responseJson = await response.json();
-        console.log(responseJson);
-        if(responseJson.answer) {
-            return Promise.resolve(responseJson);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const responseJson = await response.json();
+
+            if (
+                responseJson &&
+                typeof responseJson.answer === "string"
+            ) {
+                return responseJson;
+            }
+
+            throw new Error("Invalid response format");
+        } finally {
+            this.abortController = null;
         }
-        return Promise.reject(new Error("Invalid response format"));
+    }
+
+    isReady() {
+        return this.abortController === null;
+    }
+
+    cancelRequest() {
+        this.abortController?.abort();
     }
 }
 
-export default DataManager;
+export const dataManagerInstance = new DataManager();
