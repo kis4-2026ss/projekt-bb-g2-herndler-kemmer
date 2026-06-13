@@ -20,8 +20,8 @@ class DataManager {
         }
 
         const responseJson = await response.json();
+        console.log(responseJson);
         if(responseJson.answer) {
-            responseJson.answer = responseJson.answer.replace(/\n/g, "<br>");
             return Promise.resolve(responseJson);
         }
         return Promise.reject(new Error("Invalid response format"));

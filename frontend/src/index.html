@@ -18,7 +18,27 @@
             <button id="submitQuery" class="btn btn-primary mt-3">Submit Query</button>
         </form>
 
-        <div id="responseContainer" class="mt-4"></div>
+        <div id="responseContainer" class="mt-4">
+            <p class="form-control" id="responseText" style="white-space: pre-wrap; word-wrap: break-word;"></p>
+        </div>
+        <hr/>
+
+        <div id="usedSqlQueryContainer" class="mt-4 " style="display: none">
+            <label for="usedSqlQuery" class="form-label badge bg-secondary">Used SQL Query</label>
+            <p id="usedSqlQuery" class="text-muted" style="white-space: pre-wrap; word-wrap: break-word;"></p>
+        </div>
+
+        <div id="rawResultsContainer" class="mt-4 " style="display: none">
+            <label for="rawResults" class="form-label badge bg-secondary">Raw Results</label>
+            <div class="table-responsive">
+                <table id="rawResults" class="table table-striped table-hover">
+                    <thead>
+                        <tr id="tableHeader"></tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
 
         <script src="js/app.js" type="module"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
